@@ -1,0 +1,15 @@
+{
+  "name": "repo-flattener",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "marked": "^5.1.0",
+    "highlight.js": "^11.9.0",
+    "unzipper": "^0.10.11",
+    "axios": "^1.6.8"
+  }
+}
