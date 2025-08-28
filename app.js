@@ -100,6 +100,10 @@ app.get('/', (req, res) => {
           100% { background-position: 40px 40px; }
         }
       </style>
+      <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      </script>
+      <script defer src="/_vercel/insights/script.js"></script>
     </head>
     <body>
       <div class="container">
@@ -566,6 +570,10 @@ function buildHtml(repoUrl, repoDir, infos) {
           font-size: 0.9em;
         }
       </style>
+      <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      </script>
+      <script defer src="/_vercel/insights/script.js"></script>
     </head>
     <body>
       <a id="top"></a>
