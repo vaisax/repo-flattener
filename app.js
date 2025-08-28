@@ -298,7 +298,7 @@ function buildHtml(repoUrl, repoDir, infos) {
   // Skipped
   function renderSkipList(title, items) {
     if (!items.length) return '';
-    let lis = items.map(i => `<li><code>${escapeHtml(i.rel)}</code> <span class='muted'>(${bytesHuman(i.size)})</span></li>`).join('\n');
+    let lis = items.map(i => `<li><code>${escapeHtml(i.rel)}</code> <span class='muted'>(${bytesHtml(i.size)})</span></li>`).join('\n');
     return `<details open><summary>${escapeHtml(title)} (${items.length})</summary><ul class='skip-list'>${lis}</ul></details>`;
   }
   const skippedHtml = renderSkipList('Skipped binaries', skippedBinary) + renderSkipList('Skipped large files', skippedLarge);
@@ -346,6 +346,7 @@ function buildHtml(repoUrl, repoDir, infos) {
         .toc-top { display: block; }
         @media (min-width: 1000px) { .toc-top { display: none; } }
         :target { scroll-margin-top: 8px; }
+        
         /* Starry background */
         body::before {
           content: '';
@@ -361,33 +362,191 @@ function buildHtml(repoUrl, repoDir, infos) {
           0% { background-position: 0 0; }
           100% { background-position: 40px 40px; }
         }
-        /* Animated toggle */
+        
+        /* Animated toggle icons */
         .view-toggle {
           margin: 1rem 0;
           display: flex;
-          gap: 0.5rem;
+          gap: 0.75rem;
           align-items: center;
         }
         .toggle-btn {
-          padding: 0.5rem;
-          background: none;
-          border: none;
+          padding: 0.6rem;
+          background: rgba(22, 27, 34, 0.8);
+          border: 1px solid #30363d;
+          border-radius: 8px;
           cursor: pointer;
-          font-size: 1.5rem;
-          transition: transform 0.3s ease, opacity 0.3s ease;
+          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+          position: relative;
+          width: 48px;
+          height: 48px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          backdrop-filter: blur(8px);
         }
+        
         .toggle-btn.active {
-          transform: scale(1.2);
-          opacity: 1;
-          color: #79b8ff;
-        }
-        .toggle-btn:not(.active) {
-          opacity: 0.6;
-        }
-        .toggle-btn:hover:not(.active) {
+          border-color: #79b8ff;
+          background: rgba(121, 184, 255, 0.1);
+          box-shadow: 0 0 20px rgba(121, 184, 255, 0.3);
           transform: scale(1.1);
+        }
+        
+        .toggle-btn:not(.active) {
+          opacity: 0.7;
+        }
+        
+        .toggle-btn:hover:not(.active) {
+          transform: scale(1.05);
+          opacity: 0.9;
+          border-color: #484f58;
+        }
+        
+        /* Human icon - organic flowing curves */
+        .human-icon {
+          width: 24px;
+          height: 24px;
+          position: relative;
+        }
+        
+        .human-curve {
+          position: absolute;
+          border: 2px solid #c9d1d9;
+          border-radius: 50%;
           opacity: 0.8;
         }
+        
+        .human-curve:nth-child(1) {
+          width: 16px;
+          height: 16px;
+          top: 2px;
+          left: 4px;
+          animation: humanFlow1 4s ease-in-out infinite;
+        }
+        
+        .human-curve:nth-child(2) {
+          width: 12px;
+          height: 20px;
+          top: 0px;
+          left: 6px;
+          border-radius: 60% 40% 40% 60%;
+          animation: humanFlow2 4s ease-in-out infinite -1s;
+        }
+        
+        .human-curve:nth-child(3) {
+          width: 20px;
+          height: 8px;
+          top: 8px;
+          left: 2px;
+          border-radius: 50% 50% 80% 80%;
+          animation: humanFlow3 4s ease-in-out infinite -2s;
+        }
+        
+        @keyframes humanFlow1 {
+          0%, 100% { 
+            transform: scale(1) rotate(0deg);
+            border-radius: 50%;
+          }
+          50% { 
+            transform: scale(1.1) rotate(5deg);
+            border-radius: 60% 40% 40% 60%;
+          }
+        }
+        
+        @keyframes humanFlow2 {
+          0%, 100% { 
+            transform: scale(1) rotate(0deg);
+            border-radius: 60% 40% 40% 60%;
+          }
+          50% { 
+            transform: scale(0.9) rotate(-3deg);
+            border-radius: 40% 60% 60% 40%;
+          }
+        }
+        
+        @keyframes humanFlow3 {
+          0%, 100% { 
+            transform: scale(1) rotate(0deg);
+            border-radius: 50% 50% 80% 80%;
+          }
+          50% { 
+            transform: scale(1.05) rotate(2deg);
+            border-radius: 80% 80% 50% 50%;
+          }
+        }
+        
+        /* LLM icon - matrix grid with cascading highlights */
+        .llm-icon {
+          width: 24px;
+          height: 24px;
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 2px;
+          position: relative;
+        }
+        
+        .llm-dot {
+          width: 4px;
+          height: 4px;
+          background: #c9d1d9;
+          border-radius: 1px;
+          opacity: 0.4;
+          transition: all 0.3s ease;
+        }
+        
+        .llm-highlight {
+          position: absolute;
+          width: 6px;
+          height: 6px;
+          background: #79b8ff;
+          border-radius: 2px;
+          opacity: 0;
+          box-shadow: 0 0 8px #79b8ff;
+          animation: matrixCascade 3s linear infinite;
+        }
+        
+        .llm-highlight:nth-child(17) { animation-delay: 0s; }
+        .llm-highlight:nth-child(18) { animation-delay: 0.2s; }
+        .llm-highlight:nth-child(19) { animation-delay: 0.4s; }
+        .llm-highlight:nth-child(20) { animation-delay: 0.6s; }
+        .llm-highlight:nth-child(21) { animation-delay: 0.8s; }
+        .llm-highlight:nth-child(22) { animation-delay: 1s; }
+        
+        @keyframes matrixCascade {
+          0% { 
+            opacity: 0;
+            transform: translateY(-4px) scale(0.8);
+          }
+          20% { 
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+          80% { 
+            opacity: 1;
+            transform: translateY(0) scale(1);
+          }
+          100% { 
+            opacity: 0;
+            transform: translateY(20px) scale(0.8);
+          }
+        }
+        
+        /* Active state enhancements */
+        .toggle-btn.active .human-curve {
+          border-color: #79b8ff;
+          box-shadow: 0 0 4px rgba(121, 184, 255, 0.4);
+        }
+        
+        .toggle-btn.active .llm-dot {
+          opacity: 0.6;
+        }
+        
+        .toggle-btn.active .llm-highlight {
+          background: #ffffff;
+          box-shadow: 0 0 12px #79b8ff;
+        }
+        
         #llm-view { display: none; }
         #llm-text {
           width: 100%;
@@ -429,8 +588,39 @@ function buildHtml(repoUrl, repoDir, infos) {
           </section>
           <div class="view-toggle">
             <strong>View:</strong>
-            <button class="toggle-btn active" onclick="showHumanView()" title="Human View">👤</button>
-            <button class="toggle-btn" onclick="showLLMView()" title="LLM View">🤖</button>
+            <button class="toggle-btn active" onclick="showHumanView()" title="Human View">
+              <div class="human-icon">
+                <div class="human-curve"></div>
+                <div class="human-curve"></div>
+                <div class="human-curve"></div>
+              </div>
+            </button>
+            <button class="toggle-btn" onclick="showLLMView()" title="LLM View">
+              <div class="llm-icon">
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-dot"></div>
+                <div class="llm-highlight" style="top: 0px; left: 0px;"></div>
+                <div class="llm-highlight" style="top: 6px; left: 6px;"></div>
+                <div class="llm-highlight" style="top: 12px; left: 12px;"></div>
+                <div class="llm-highlight" style="top: 18px; left: 18px;"></div>
+                <div class="llm-highlight" style="top: 0px; left: 18px;"></div>
+                <div class="llm-highlight" style="top: 18px; left: 0px;"></div>
+              </div>
+            </button>
           </div>
           <div id="human-view">
             <section>
@@ -464,13 +654,13 @@ function buildHtml(repoUrl, repoDir, infos) {
           document.getElementById('human-view').style.display = 'block';
           document.getElementById('llm-view').style.display = 'none';
           document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
-          event.target.classList.add('active');
+          event.target.closest('.toggle-btn').classList.add('active');
         }
         function showLLMView() {
           document.getElementById('human-view').style.display = 'none';
           document.getElementById('llm-view').style.display = 'block';
           document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
-          event.target.classList.add('active');
+          event.target.closest('.toggle-btn').classList.add('active');
           setTimeout(() => {
             const textArea = document.getElementById('llm-text');
             textArea.focus();
