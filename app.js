@@ -17,7 +17,7 @@ const port = process.env.PORT || 3000;
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
-// Homepage: Improved UI with lagom aesthetic
+// Homepage: Clean simple UI (back to original)
 app.get('/', (req, res) => {
   res.send(`
     <!DOCTYPE html>
@@ -118,9 +118,201 @@ app.get('/', (req, res) => {
   `);
 });
 
-// Endpoint to flatten repo
+// Token input page for private repos
+app.get('/auth', (req, res) => {
+  const repoUrl = req.query.repo_url;
+  if (!repoUrl) {
+    return res.redirect('/');
+  }
+  
+  res.send(`
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Private Repository Access</title>
+      <style>
+        body {
+          background: #0d1117;
+          color: #c9d1d9;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+          margin: 0;
+          padding: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          min-height: 100vh;
+          overflow: hidden;
+        }
+        .container {
+          max-width: 700px;
+          text-align: center;
+          padding: 2rem;
+          z-index: 1;
+        }
+        h1 {
+          font-size: 2.2rem;
+          margin-bottom: 1rem;
+          color: #e6edf3;
+          text-shadow: 0 0 10px rgba(255,255,255,0.2);
+        }
+        .repo-info {
+          background: #161b22;
+          border: 1px solid #30363d;
+          border-radius: 8px;
+          padding: 1rem;
+          margin-bottom: 2rem;
+          font-family: monospace;
+          color: #79b8ff;
+        }
+        .auth-info {
+          background: #161b22;
+          border: 1px solid #30363d;
+          border-radius: 8px;
+          padding: 1.5rem;
+          margin-bottom: 2rem;
+          text-align: left;
+        }
+        .auth-info h3 {
+          margin: 0 0 1rem 0;
+          color: #79b8ff;
+          font-size: 1.1rem;
+        }
+        .auth-info p {
+          margin: 0.5rem 0;
+          font-size: 0.9rem;
+          line-height: 1.4;
+        }
+        .auth-info code {
+          background: #0d1117;
+          padding: 0.2rem 0.4rem;
+          border-radius: 4px;
+          font-size: 0.85rem;
+        }
+        .auth-info a {
+          color: #79b8ff;
+          text-decoration: none;
+        }
+        .auth-info a:hover {
+          text-decoration: underline;
+        }
+        form {
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+        input {
+          padding: 0.75rem;
+          font-size: 1rem;
+          background: #161b22;
+          color: #c9d1d9;
+          border: 1px solid #30363d;
+          border-radius: 8px;
+          transition: all 0.3s ease;
+          outline: none;
+          font-family: monospace;
+        }
+        input:focus {
+          border-color: #79b8ff;
+          box-shadow: 0 0 8px rgba(88,166,255,0.5);
+        }
+        .button-group {
+          display: flex;
+          gap: 1rem;
+        }
+        button {
+          padding: 0.75rem 1.5rem;
+          font-size: 1rem;
+          border: none;
+          border-radius: 8px;
+          cursor: pointer;
+          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          flex: 1;
+        }
+        .btn-primary {
+          background: linear-gradient(45deg, #1f6feb, #79b8ff);
+          color: #fff;
+        }
+        .btn-secondary {
+          background: #21262d;
+          color: #c9d1d9;
+          border: 1px solid #30363d;
+        }
+        button:hover {
+          transform: translateY(-2px);
+        }
+        .btn-primary:hover {
+          box-shadow: 0 4px 12px rgba(88,166,255,0.4);
+        }
+        .btn-secondary:hover {
+          box-shadow: 0 4px 12px rgba(33,38,45,0.4);
+        }
+        /* Starry background */
+        body::before {
+          content: '';
+          position: fixed;
+          top: 0; left: 0; width: 100%; height: 100%;
+          background: radial-gradient(circle, rgba(255,255,255,0.15) 1px, transparent 1px);
+          background-size: 40px 40px;
+          animation: stars 60s linear infinite;
+          z-index: -1;
+          opacity: 0.7;
+        }
+        @keyframes stars {
+          0% { background-position: 0 0; }
+          100% { background-position: 40px 40px; }
+        }
+      </style>
+      <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      </script>
+      <script defer src="/_vercel/insights/script.js"></script>
+    </head>
+    <body>
+      <div class="container">
+        <h1>🔐 Private Repository Detected</h1>
+        
+        <div class="repo-info">
+          ${escapeHtml(repoUrl)}
+        </div>
+        
+        <div class="auth-info">
+          <h3>GitHub Personal Access Token Required</h3>
+          <p><strong>To access this private repository, you'll need a GitHub token:</strong></p>
+          <p>1. Go to <a href="https://github.com/settings/tokens" target="_blank">GitHub Settings → Developer settings → Personal access tokens → Tokens (classic)</a></p>
+          <p>2. Click "Generate new token (classic)"</p>
+          <p>3. Set an expiration date (e.g., 30 days)</p>
+          <p>4. <strong>Important:</strong> Select the <code>repo</code> scope (Full control of private repositories)</p>
+          <p>5. Click "Generate token" and copy the token (starts with <code>ghp_</code>)</p>
+          <p><strong>⚠️ Token Requirements:</strong></p>
+          <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+            <li>Must have <code>repo</code> scope selected</li>
+            <li>Your GitHub account must have access to the repository</li>
+            <li>Token should start with <code>ghp_</code> or <code>github_pat_</code></li>
+          </ul>
+          <p><strong>🔒 Security:</strong> Your token is only used for this request and is not stored.</p>
+        </div>
+
+        <form action="/flatten" method="post">
+          <input type="hidden" name="repo_url" value="${escapeHtml(repoUrl)}">
+          <input type="password" name="github_token" placeholder="ghp_xxxxxxxxxxxxxxxxxxxx" required>
+          <div class="button-group">
+            <button type="button" class="btn-secondary" onclick="history.back()">← Back</button>
+            <button type="submit" class="btn-primary">Access Repository</button>
+          </div>
+        </form>
+      </div>
+    </body>
+    </html>
+  `);
+});
+
+// Endpoint to flatten repo with smart private repo detection
 app.post('/flatten', async (req, res) => {
   const repoUrl = req.body.repo_url;
+  const githubToken = req.body.github_token;
+  
   if (!repoUrl || !repoUrl.startsWith('https://github.com/')) {
     return res.status(400).send('Invalid GitHub repo URL.');
   }
@@ -130,15 +322,35 @@ app.post('/flatten', async (req, res) => {
     const parts = repoUrl.replace('.git', '').split('/').slice(-2);
     const owner = parts[0];
     const repo = parts[1];
-    const zipUrl = `https://github.com/${owner}/${repo}/archive/refs/heads/main.zip`;
 
     // Create temp dir
     const tempDir = path.join(os.tmpdir(), crypto.randomUUID());
     fs.mkdirSync(tempDir, { recursive: true });
 
-    // Download ZIP
-    const response = await axios.get(zipUrl, { responseType: 'arraybuffer' });
-    const zipBuffer = response.data;
+    let zipBuffer;
+    
+    if (githubToken) {
+      // Use GitHub API for authenticated access
+      zipBuffer = await downloadRepoWithAuth(owner, repo, githubToken);
+    } else {
+      // Try public access first
+      try {
+        // Try main branch
+        const zipUrl = `https://github.com/${owner}/${repo}/archive/refs/heads/main.zip`;
+        const response = await axios.get(zipUrl, { responseType: 'arraybuffer' });
+        zipBuffer = response.data;
+      } catch (error) {
+        // If main fails, try master branch
+        try {
+          const zipUrl = `https://github.com/${owner}/${repo}/archive/refs/heads/master.zip`;
+          const response = await axios.get(zipUrl, { responseType: 'arraybuffer' });
+          zipBuffer = response.data;
+        } catch (masterError) {
+          // Both failed - likely private repo, redirect to auth page
+          return res.redirect(`/auth?repo_url=${encodeURIComponent(repoUrl)}`);
+        }
+      }
+    }
 
     // Extract ZIP
     await new Promise((resolve, reject) => {
@@ -173,6 +385,83 @@ app.post('/flatten', async (req, res) => {
     res.status(500).send('Error processing repo: ' + error.message);
   }
 });
+
+// Function to download repo with authentication
+async function downloadRepoWithAuth(owner, repo, token) {
+  // Support both token formats
+  const authHeader = token.startsWith('ghp_') || token.startsWith('github_pat_') 
+    ? `token ${token}` 
+    : `Bearer ${token}`;
+    
+  const apiHeaders = {
+    'Authorization': authHeader,
+    'Accept': 'application/vnd.github+json',
+    'User-Agent': 'repo-flattener',
+    'X-GitHub-Api-Version': '2022-11-28'
+  };
+
+  try {
+    console.log(`Attempting to access repo: ${owner}/${repo}`);
+    
+    // First, test the token by getting user info
+    try {
+      const userResponse = await axios.get('https://api.github.com/user', {
+        headers: apiHeaders
+      });
+      console.log(`Token valid for user: ${userResponse.data.login}`);
+    } catch (userError) {
+      console.log('Token validation failed:', userError.response?.status, userError.response?.data);
+      throw new Error(`Invalid GitHub token. Status: ${userError.response?.status}. Please verify your token has the correct permissions.`);
+    }
+    
+    // Get repository info to check if it exists and get the default branch
+    const repoInfo = await axios.get(`https://api.github.com/repos/${owner}/${repo}`, {
+      headers: apiHeaders
+    });
+    
+    console.log(`Repository found: ${repoInfo.data.name}, private: ${repoInfo.data.private}, default branch: ${repoInfo.data.default_branch}`);
+    const defaultBranch = repoInfo.data.default_branch;
+    
+    // Download the repository archive
+    const archiveResponse = await axios.get(
+      `https://api.github.com/repos/${owner}/${repo}/zipball/${defaultBranch}`,
+      {
+        headers: apiHeaders,
+        responseType: 'arraybuffer',
+        maxContentLength: Infinity,
+        maxBodyLength: Infinity
+      }
+    );
+    
+    console.log(`Archive downloaded successfully, size: ${archiveResponse.data.byteLength} bytes`);
+    return archiveResponse.data;
+    
+  } catch (error) {
+    console.error('GitHub API Error Details:', {
+      status: error.response?.status,
+      statusText: error.response?.statusText,
+      data: error.response?.data,
+      headers: error.response?.headers
+    });
+    
+    if (error.response?.status === 404) {
+      throw new Error(`Repository "${owner}/${repo}" not found. Please check:\n1. Repository name is correct\n2. Repository exists\n3. Your token has access to this repository\n4. If it's a private repo, ensure your token has 'repo' scope`);
+    } else if (error.response?.status === 401) {
+      throw new Error(`Authentication failed. Please check:\n1. Your token is valid and not expired\n2. Token has 'repo' scope for private repositories\n3. Token format is correct (should start with 'ghp_' or 'github_pat_')`);
+    } else if (error.response?.status === 403) {
+      const rateLimitRemaining = error.response?.headers['x-ratelimit-remaining'];
+      const rateLimitReset = error.response?.headers['x-ratelimit-reset'];
+      if (rateLimitRemaining === '0') {
+        const resetTime = new Date(parseInt(rateLimitReset) * 1000).toLocaleTimeString();
+        throw new Error(`GitHub API rate limit exceeded. Limit resets at ${resetTime}. Please try again later.`);
+      } else {
+        throw new Error(`Access forbidden. Please ensure:\n1. Your token has 'repo' scope\n2. You have access to this repository\n3. The repository isn't archived or restricted`);
+      }
+    } else {
+      throw new Error(`GitHub API error (${error.response?.status}): ${error.response?.data?.message || error.message}`);
+    }
+  }
+}
 
 function collectFiles(repoRoot) {
   const infos = [];
@@ -302,12 +591,12 @@ function buildHtml(repoUrl, repoDir, infos) {
   // Skipped
   function renderSkipList(title, items) {
     if (!items.length) return '';
-    let lis = items.map(i => `<li><code>${escapeHtml(i.rel)}</code> <span class='muted'>(${bytesHtml(i.size)})</span></li>`).join('\n');
+    let lis = items.map(i => `<li><code>${escapeHtml(i.rel)}</code> <span class='muted'>(${bytesHuman(i.size)})</span></li>`).join('\n');
     return `<details open><summary>${escapeHtml(title)} (${items.length})</summary><ul class='skip-list'>${lis}</ul></details>`;
   }
   const skippedHtml = renderSkipList('Skipped binaries', skippedBinary) + renderSkipList('Skipped large files', skippedLarge);
 
-  // HTML with animated toggle
+  // HTML with animated toggle (keeping the same HTML structure as original)
   return `
     <!DOCTYPE html>
     <html lang="en">
