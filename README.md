@@ -31,44 +31,7 @@ A sleek web app that flattens GitHub repositories into a single HTML page, with 
    ```
 4. Open `http://localhost:3000` in your browser, enter a GitHub repo URL (e.g., `https://github.com/axios/axios`), and submit.
 
-## Deployment
-### GitHub
-1. Initialize a Git repository:
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   ```
-2. Create a GitHub repository at [github.com](https://github.com).
-3. Push to GitHub:
-   ```bash
-   git remote add origin https://github.com/<your-username>/repo-flattener.git
-   git push -u origin main
-   ```
-4. Create a release:
-   - Go to GitHub > **Releases** > **Create a new release**.
-   - Tag: `v1.0.0`, Title: "Initial Release", describe features, and publish.
-
-### Vercel
-1. Install Vercel CLI:
-   ```bash
-   npm install -g vercel
-   ```
-2. Log in:
-   ```bash
-   vercel login
-   ```
-3. Deploy:
-   ```bash
-   vercel
-   ```
-   - Accept defaults: Project name (`repo-flattener`), root (`./`), framework (`Other`).
-   - Link to your GitHub repo for automatic deployments.
-4. Promote to production (optional):
-   ```bash
-   vercel --prod
-   ```
-5. Visit the provided URL (e.g., `https://repo-flattener.vercel.app`).
+## Visit the provided URL (e.g., `https://repo-flattener.vercel.app`).
 
 ## Usage
 - Enter a public GitHub repo URL (e.g., `https://github.com/<owner>/<repo>`).
